@@ -656,7 +656,7 @@ impl<'a> Read<'a> for StrRead<'a> {
     }
 
     fn parse_str<'s>(&'s mut self, scratch: &'s mut Vec<u8>) -> Result<Reference<'a, 's, str>> {
-        self.delegate.parse_str_bytes(scratch, true, |_, bytes| {
+        self.delegate.parse_str_bytes(scratch, false, |_, bytes| {
             // The deserialization input came in as &str with a UTF-8 guarantee,
             // and the \u-escapes are checked along the way, so don't need to
             // check here.
@@ -915,9 +915,9 @@ fn parse_escape<'de, R: Read<'de>>(
 
                     let n2 = tri!(read.decode_hex_escape());
 
-                    if n2 < 0xDC00 || n2 > 0xDFFF {
-                        return error(read, ErrorCode::LoneLeadingSurrogateInHexEscape);
-                    }
+                    // if n2 < 0xDC00 || n2 > 0xDFFF {
+                    //     return error(read, ErrorCode::LoneLeadingSurrogateInHexEscape);
+                    // }
 
                     let n = (((n1 - 0xD800) as u32) << 10 | (n2 - 0xDC00) as u32) + 0x1_0000;
 
